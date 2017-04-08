@@ -16,8 +16,6 @@ grammar = r"""
         {<NBAR><IN><NBAR>}  # Above, connected with in/of/etc...
 """
 
-keywords = []
-
 def start(text):
     # enter whatever text needed
     #text = """Alcohol is a problem in life. Beer is love."""
@@ -27,10 +25,10 @@ def start(text):
     """
     sentence_re = r'(?:(?:[A-Z])(?:.[A-Z])+.?)|(?:\w+(?:-\w+)*)|(?:\$?\d+(?:.\d+)?%?)|(?:...|)(?:[][.,;"\'?():-_`])'
 
+    keywords = []
     chunker = nltk.RegexpParser(grammar)
     toks = nltk.regexp_tokenize(text, sentence_re)
     postoks = nltk.tag.pos_tag(toks)
-    print postoks
     tree = chunker.parse(postoks)
     terms = get_terms(tree)
 
@@ -38,6 +36,7 @@ def start(text):
         for word in term:
             if word.isalpha():
                 keywords.append(word)
+    return keywords
 
 def leaves(tree):
     """Finds NP (nounphrase) leaf nodes of a chunk tree."""
@@ -63,6 +62,28 @@ def get_terms(tree):
         term = [normalise(w) for w,t in leaf if acceptable_word(w)]
         yield term
 
+def simulate_problems():
+    problem_list = ['I cannot control myself once I start drinking.', 
+                    'I cannot complete a day without 2 bottles of vodka.',
+                    'I get wasted every other day.',
+                    'I feel like alcohol is taken over my life.',
+                    'I cannot imagine my life without scotch.',
+                    'I spend all my money on booze.',
+                    'My wife will leave me if I don\'t give up drinking.',
+                    'I drink a lot.',
+                    'I try to quit drinking but my friends won\'t let me.',
+                    'I am alone because of my drinking habits.',
+                    'I lost my friends due to my alcohol addiction.',
+                    'My health has gone down because I drink too much.',
+                    'I might have liver problems because of my drinking habit.',
+                    'I just want to open up to someone about my booze addiction.',
+                    'I don\'t understand why people have a problem with my drinking.',
+                    'I drink more whiskey than I do water.'
+                    ]
+    for sent in problem_list:
+        print sent, start(str(sent.split()))
+        print
+
 if __name__ == '__main__':
-    start(str(sys.argv[1:]))
+    simulate_problems()
     
